@@ -290,6 +290,42 @@ app.post('/api/upload', function(req, res) {
 
 
 
+app.post('/upload', function(req, res) {
+  let sampleFile;
+  let uploadPath;
+
+  if (!req.files || Object.keys(req.files).length === 0) {
+    res.error(300,'No files were uploaded.');
+    return;
+  }
+
+  console.log('req.files >>>', req.files); // eslint-disable-line
+
+  sampleFile = req.files.sampleFile;
+  var exten = sampleFile.name.split('.');
+  console.log(exten[exten.length - 1]);
+  var filetype = exten[exten.length - 1];
+
+
+
+  uploadPath = __dirname + '/public/uploads/'  + new Date().getTime() + "." + filetype;
+
+  var Finalpath =  BaseUrl +'/uploads/'+ new Date().getTime() + "." + filetype;
+   console.log("uploaded path",uploadPath )
+
+
+  sampleFile.mv(uploadPath, function(err) {
+    if (err) {
+   console.log(err)
+   return res.error(500, "Internal server error");
+    }
+   res.json({Status:"Success",Message:"file upload success", Data :Finalpath,Code:200});
+  });
+});
+
+
+
+
 app.post('/api/upload1', function(req, res) {
   let sampleFile;
   let uploadPath;
@@ -329,6 +365,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public'), {dotfiles: 'allow'}));
 app.use('/api/', express.static(path.join(__dirname, 'public')));
 app.use('/api/', express.static(path.join(__dirname, 'routes')));
 
